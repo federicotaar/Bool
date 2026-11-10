@@ -30,9 +30,6 @@ jobs:
           echo "Using SDK: $SDK"
           sed -i '' "s|iPhoneOS26\.2\.sdk|$SDK|" Erosion.xcodeproj/project.pbxproj
 
-      - name: Build with target instead of scheme (repo has no shared scheme)
-        run: sed -i '' 's|-scheme "$APPLICATION_NAME"|-target "$APPLICATION_NAME"|' ipabuild.sh
-
       - name: Install ldid
         run: brew install ldid
 

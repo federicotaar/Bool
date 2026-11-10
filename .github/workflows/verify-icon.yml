@@ -1,0 +1,33 @@
+name: Verify built icon
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract compiled icon from the released IPA
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release download 2026.11.10.1 --pattern Bool.ipa
+          rm -rf x && mkdir x && unzip -q Bool.ipa -d x
+          APP=$(ls x/Payload)
+          echo "App bundle: $APP"
+          ls "x/Payload/$APP" | grep -iE 'AppIcon|Assets.car' || true
+          mkdir -p build-verification
+          cp "x/Payload/$APP/AppIcon60x60@2x.png" build-verification/
+
+      - name: Commit verification icon
+        run: |
+          git config user.name "github-actions"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add build-verification
+          git commit -m "Add compiled AppIcon60x60@2x.png extracted from Bool.ipa"
+          git push

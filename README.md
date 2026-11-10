@@ -54,17 +54,6 @@ Or run the **Build Bool IPA** GitHub Actions workflow manually from the Actions 
 - Some tweaks can render specific device configurations unstable or unusable. Read each in-app warning before enabling a tweak.
 - Tweak behavior depends on the device and, in some cases, Apple's servers. A tweak not working is not necessarily a bug in the app.
 
-## Credits
-
-Bool is based on the [Erosion](https://github.com/jailbreakdotparty/Erosion) project.
-
-- [lunginspector](https://github.com/lunginspector) - Primary developer and maintainer.
-- [forcequit](https://github.com/forcequitOS) - worse_query sandbox escape and container enumeration strategy.
-- [0xjohnny](https://github.com/0xjohnnydev) - worse_query sandbox escape.
-- [Skadz](https://github.com/skadz108) - Exploit implementation, backend functions, and project maintainer.
-- [rooootdev](https://github.com/rooootdev) - Various backend components.
-- [neonmodder123](https://github.com/neonmodder123) - WebView respring method.
-
 ## License
 
 [GNU General Public License v3.0](LICENSE)

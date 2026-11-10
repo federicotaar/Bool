@@ -1,0 +1,59 @@
+name: Build Bool IPA
+
+on:
+  push:
+    paths:
+      - '.github/workflows/build-ipa.yml'
+      - 'Erosion/**'
+      - 'Erosion.xcodeproj/**'
+      - 'ipabuild.sh'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Environment info
+        run: |
+          xcodebuild -version
+          ls "$(xcode-select -p)/Platforms/iPhoneOS.platform/Developer/SDKs/"
+
+      - name: Patch libarchive SDK path to the runner's SDK
+        run: |
+          DEV_DIR="$(xcode-select -p)"
+          SDK=$(ls "$DEV_DIR/Platforms/iPhoneOS.platform/Developer/SDKs/" | grep '^iPhoneOS' | sort -V | tail -1)
+          echo "Using SDK: $SDK"
+          sed -i '' "s|iPhoneOS26\.2\.sdk|$SDK|" Erosion.xcodeproj/project.pbxproj
+
+      - name: Build with target instead of scheme (repo has no shared scheme)
+        run: sed -i '' 's|-scheme "$APPLICATION_NAME"|-target "$APPLICATION_NAME"|' ipabuild.sh
+
+      - name: Install ldid
+        run: brew install ldid
+
+      - name: Build IPA
+        run: ./ipabuild.sh
+
+      - name: Verify packaged app and rename to Bool.ipa
+        run: |
+          mv Erosion.ipa Bool.ipa
+          rm -rf /tmp/boolcheck && mkdir -p /tmp/boolcheck
+          unzip -q Bool.ipa -d /tmp/boolcheck
+          APP=$(ls /tmp/boolcheck/Payload)
+          echo "Packaged app bundle: $APP"
+          echo -n "CFBundleDisplayName: "
+          /usr/libexec/PlistBuddy -c "Print CFBundleDisplayName" "/tmp/boolcheck/Payload/$APP/Info.plist"
+          ls "/tmp/boolcheck/Payload/$APP" | grep -iE 'Assets.car|AppIcon' || echo 'no Assets.car found'
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create 2026.11.10.1 Bool.ipa \
+            --title "Bool 2026.11.10.1" \
+            --notes "Unsigned Bool build: home-screen name Bool, new cloud icon, internal UI unchanged from the original project. Sideload with your own Apple ID (SideStore, AltStore, Sideloadly)."

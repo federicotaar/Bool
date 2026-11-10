@@ -1,13 +1,11 @@
 name: Build Bool IPA
 
 on:
-  push:
-    paths:
-      - '.github/workflows/build-ipa.yml'
-      - 'Erosion/**'
-      - 'Erosion.xcodeproj/**'
-      - 'ipabuild.sh'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version, e.g. 2026.11.10.2 (must be new; existing tags are never overwritten)'
+        required: true
 
 permissions:
   contents: write
@@ -47,10 +45,10 @@ jobs:
           /usr/libexec/PlistBuddy -c "Print CFBundleDisplayName" "/tmp/boolcheck/Payload/$APP/Info.plist"
           ls "/tmp/boolcheck/Payload/$APP" | grep -iE 'Assets.car|AppIcon' || echo 'no Assets.car found'
 
-      - name: Create release
+      - name: Create release (fails if the tag already exists; never overwrites)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create 2026.11.10.1 Bool.ipa \
-            --title "Bool 2026.11.10.1" \
-            --notes "Unsigned Bool build: home-screen name Bool, new cloud icon, internal UI unchanged from the original project. Sideload with your own Apple ID (SideStore, AltStore, Sideloadly)."
+          gh release create "${{ inputs.version }}" Bool.ipa \
+            --title "Bool ${{ inputs.version }}" \
+            --notes "Unsigned Bool build: home-screen name Bool, cloud icon, internal UI unchanged from the original project. Sideload with your own Apple ID (SideStore, AltStore, Sideloadly)."

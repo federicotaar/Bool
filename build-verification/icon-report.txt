@@ -1,0 +1,19 @@
+extracted sha256: 084c323ca60446b039c77675c3f7afb41447c6d0233afbefde4f357c5dac17e8
+has CgBI chunk: True
+extracted size: (120, 120)
+corner pixels RGBA: [(93, 208, 255, 255), (93, 208, 255, 255), (18, 123, 254, 255), (19, 125, 254, 255)]
+center pixel RGBA: (249, 251, 253, 255)
+average RGBA: (98, 184, 253, 255)
+8x8 grid (hex RRGGBBAA):
+83dfffff 67d0feff 5fcdfeff 5ecdfeff 5ccdfeff 5bcdfeff 5acdfeff 5fd3ffff
+5ec6feff 43b8fdff 43b8fdff 42b7fdff 43b8fdff 43b8fdff 46b9fdff 4dc0feff
+4db8feff 34aafdff 51b6fdff c5e7feff c5e7feff 50b6fdff 37acfdff 44b5feff
+3facfeff 5eb6fdff d2eafdff fffffdff fffffdff c3e4fdff 4fb0fdff 39a9feff
+33a1feff bfe0fcff fffffdff fefefdff fefefdff fffffdff bbdefdff 309ffeff
+2896fdff 5cabfcff b5d8fcff b4d8fcff b4d8fcff b6d8fcff 61aefcff 2894fdff
+218dfdff 107ffbff 107ffbff 1180fbff 107ffbff 0f7ffbff 0e7efbff 2b90fdff
+1d88feff 147ffdff 137efdff 167ffdff 1881fdff 1981fdff 2287fdff 3996feff
+source icon files found: ['Erosion/Resources/AppIcon.icon/Assets/bool-icon.png']
+mean abs RGB diff vs source (0-255): 6.08
+CFBundleDisplayName: Bool
+CFBundleName: Erosion

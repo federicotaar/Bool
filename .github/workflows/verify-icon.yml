@@ -22,44 +22,81 @@ jobs:
           echo "App bundle: $APP"
           ls "x/Payload/$APP" | grep -iE 'AppIcon|Assets.car' || true
           mkdir -p build-verification
-          cp "x/Payload/$APP/AppIcon60x60@2x.png" build-verification/
+          cp "x/Payload/$APP/AppIcon60x60@2x.png" build-verification/AppIcon60x60@2x.cgbi.png
 
       - name: Analyze compiled icon pixels vs source icon
         run: |
           pip install --quiet pillow
           python3 - <<'PY'
-          import hashlib, io, os, plistlib, glob
+          import hashlib, io, os, plistlib, glob, struct, zlib
           from PIL import Image, ImageChops
+
+          def read_cgbi(data):
+              off = 8; idat = b''; ihdr = None; cgbi = False
+              while off < len(data):
+                  ln = int.from_bytes(data[off:off+4], 'big'); typ = data[off+4:off+8]
+                  chunk = data[off+8:off+8+ln]
+                  if typ == b'CgBI': cgbi = True
+                  elif typ == b'IHDR': ihdr = chunk
+                  elif typ == b'IDAT': idat += chunk
+                  off += 12 + ln
+              w, h = struct.unpack('>II', ihdr[:8]); ctype = ihdr[9]
+              ch = {6: 4, 2: 3}[ctype]
+              raw = zlib.decompress(idat, -15) if cgbi else zlib.decompress(idat)
+              stride = w * ch
+              outb = bytearray(h * stride); prev = bytearray(stride); pos = 0
+              for y in range(h):
+                  f = raw[pos]; pos += 1
+                  line = bytearray(raw[pos:pos+stride]); pos += stride
+                  if f == 1:
+                      for i in range(ch, stride): line[i] = (line[i] + line[i-ch]) & 255
+                  elif f == 2:
+                      for i in range(stride): line[i] = (line[i] + prev[i]) & 255
+                  elif f == 3:
+                      for i in range(stride): line[i] = (line[i] + ((line[i-ch] if i >= ch else 0) + prev[i]) // 2) & 255
+                  elif f == 4:
+                      for i in range(stride):
+                          a = line[i-ch] if i >= ch else 0; b = prev[i]; c = prev[i-ch] if i >= ch else 0
+                          p = a + b - c; pa = abs(p-a); pb = abs(p-b); pc = abs(p-c)
+                          pr = a if (pa <= pb and pa <= pc) else (b if pb <= pc else c)
+                          line[i] = (line[i] + pr) & 255
+                  outb[y*stride:(y+1)*stride] = line; prev = line
+              if ctype == 6:
+                  px = bytearray(len(outb))
+                  for i in range(0, len(outb), 4):
+                      b, g, r, a = outb[i], outb[i+1], outb[i+2], outb[i+3]
+                      if a:
+                          r = min(255, r*255//a); g = min(255, g*255//a); b = min(255, b*255//a)
+                      px[i], px[i+1], px[i+2], px[i+3] = r, g, b, a
+                  return Image.frombytes('RGBA', (w, h), bytes(px))
+              return Image.frombytes('RGB', (w, h), bytes(outb))
+
           out = []
           appdir = glob.glob('x/Payload/*.app')[0]
-          ext = os.path.join('build-verification', 'AppIcon60x60@2x.png')
-          data = open(ext, 'rb').read()
-          out.append(f"extracted sha256: {hashlib.sha256(data).hexdigest()}")
-          img = Image.open(io.BytesIO(data)).convert('RGBA')
-          out.append(f"extracted size: {img.size} mode: {Image.open(io.BytesIO(data)).mode}")
+          rawdata = open('build-verification/AppIcon60x60@2x.cgbi.png', 'rb').read()
+          out.append(f"extracted sha256: {hashlib.sha256(rawdata).hexdigest()}")
+          out.append(f"has CgBI chunk: {rawdata.find(b'CgBI') > 0}")
+          img = read_cgbi(rawdata).convert('RGBA')
+          out.append(f"extracted size: {img.size}")
+          img.save('build-verification/AppIcon60x60@2x.png')
           w, h = img.size
           corners = [img.getpixel(p) for p in [(0,0),(w-1,0),(0,h-1),(w-1,h-1)]]
           out.append(f"corner pixels RGBA: {corners}")
-          center = img.getpixel((w//2, h//2))
-          out.append(f"center pixel RGBA: {center}")
-          # average color
+          out.append(f"center pixel RGBA: {img.getpixel((w//2, h//2))}")
           small = img.resize((8,8))
           px = list(small.getdata())
           avg = tuple(round(sum(c[i] for c in px)/len(px)) for i in range(4))
           out.append(f"average RGBA: {avg}")
           out.append("8x8 grid (hex RRGGBBAA):")
           for yy in range(8):
-              row = px[yy*8:(yy+1)*8]
-              out.append(' '.join('%02x%02x%02x%02x' % c for c in row))
-          # compare with source icon
+              out.append(' '.join('%02x%02x%02x%02x' % c for c in px[yy*8:(yy+1)*8]))
           srcs = glob.glob('**/bool-icon.png', recursive=True)
           out.append(f"source icon files found: {srcs}")
           if srcs:
               src = Image.open(srcs[0]).convert('RGBA').resize(img.size)
               diff = ImageChops.difference(img, src)
-              stat = sum(sum(p[:3]) for p in diff.getdata()) / (img.size[0]*img.size[1]*3)
+              stat = sum(sum(p[:3]) for p in diff.getdata()) / (w*h*3)
               out.append(f"mean abs RGB diff vs source (0-255): {stat:.2f}")
-          # Info.plist display name
           info = plistlib.load(open(os.path.join(appdir, 'Info.plist'), 'rb'))
           out.append(f"CFBundleDisplayName: {info.get('CFBundleDisplayName')}")
           out.append(f"CFBundleName: {info.get('CFBundleName')}")
@@ -72,5 +109,5 @@ jobs:
           git config user.name "github-actions"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add build-verification
-          git commit -m "Add compiled icon pixel report" || echo "nothing to commit"
+          git commit -m "Add compiled icon pixel report and normalized icon" || echo "nothing to commit"
           git push

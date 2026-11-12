@@ -4,6 +4,8 @@
 //
 //  Created by lunginspector on 8/19/26.
 //
+//  Applies and manages PosterBoard wallpaper descriptors, including MercuryPoster support.
+//
 
 import Foundation
 

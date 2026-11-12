@@ -4,6 +4,8 @@
 //
 //  Created by lunginspector on 8/14/26.
 //
+//  MobileGestalt tweak list: toggle hidden device capabilities with per-tweak warnings.
+//
 
 import SwiftUI
 

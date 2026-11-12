@@ -4,6 +4,8 @@
 //
 //  Created by ruter on 16.07.26.
 //
+//  Typed accessors and conversion helpers for MobileGestalt keys and values.
+//
 
 import Foundation
 import Darwin
@@ -128,4 +130,3 @@ func isActionButtonHD() -> Bool {
     }
     return false
 }
-

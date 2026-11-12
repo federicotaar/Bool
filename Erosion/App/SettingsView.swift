@@ -4,6 +4,8 @@
 //
 //  Created by lunginspector on 8/20/26.
 //
+//  Settings screen: app-wide options, write-mode preferences, and the about section.
+//
 
 import SwiftUI
 

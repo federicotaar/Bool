@@ -82,3 +82,6 @@ Or run the **Build Bool IPA** GitHub Actions workflow manually from the Actions 
 ## License
 
 [GNU General Public License v3.0](LICENSE)
+
+Change history lives in [CHANGELOG.md](CHANGELOG.md); release builds are on the
+[Releases](https://github.com/federicotaar/Bool/releases) page.

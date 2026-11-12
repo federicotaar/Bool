@@ -141,11 +141,13 @@ struct ConfigView: View {
     }
     
     private func apply() {
-        let ftDict = ["LockScreenFootnote" : footnoteText]
+        // update the loaded dict instead of writing a single-key one, so any other
+        // keys already present in SharedDeviceConfiguration.plist are preserved
+        ftCurrentDict["LockScreenFootnote"] = footnoteText
         ccCurrentDict["IsSupervised"] = supervised
         ccCurrentDict["OrganizationName"] = orgName
         do {
-            let ftData = try PropertyListSerialization.data(fromPropertyList: ftDict, format: .binary, options: 0)
+            let ftData = try PropertyListSerialization.data(fromPropertyList: ftCurrentDict, format: .binary, options: 0)
             try ftData.write(to: CNURL.sharedDevConfig)
             let ccData = try PropertyListSerialization.data(fromPropertyList: ccCurrentDict, format: .binary, options: 0)
             try ccData.write(to: CNURL.cloudConfig)

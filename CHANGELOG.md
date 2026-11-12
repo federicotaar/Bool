@@ -3,7 +3,7 @@
 All notable changes to Bool are documented here. Release versions use the
 `YYYY.MM.DD.N` scheme (date of the build plus a per-day counter).
 
-## [Unreleased]
+## [2026.11.12.1] - 2026-11-12
 
 ### Added
 - "Custom Height..." entry in the Dynamic Island subtype picker: the subtype

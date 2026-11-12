@@ -2,7 +2,7 @@
   <img src="Erosion/Resources/AppIcon.icon/Assets/bool-icon-rounded.png" alt="Bool icon" width="150">
   <h1>Bool</h1>
   <p>An iOS customization toolbox built on the <a href="https://github.com/forcequitOS/worse_query">worse_query</a> sandbox escape.</p>
-  <a href="https://github.com/federicotaar/Bool/releases"><img alt="Releases" src="https://img.shields.io/badge/Releases-v2026.11.10.1-1f6feb?style=for-the-badge"></a>
+  <a href="https://github.com/federicotaar/Bool/releases"><img alt="Releases" src="https://img.shields.io/badge/Releases-v2026.11.12.1-1f6feb?style=for-the-badge"></a>
 </div>
 
 ---
@@ -15,7 +15,7 @@ Bool modifies system features and appearance on supported iOS versions without a
 
 | Feature | Description |
 | --- | --- |
-| MobileGestalt tweaks | Toggle hidden device capabilities (Dynamic Island, Always-On Display, 80% charge limit, boot chime, internal build flags, and more). iOS 27 only. |
+| MobileGestalt tweaks | Toggle hidden device capabilities (Dynamic Island, Always-On Display, 80% charge limit, boot chime, internal build flags, and more). iOS 27 only. Dynamic Island height can also be typed in manually. |
 | Custom wallpapers | PosterBoard-based wallpaper collections, including MercuryPoster support. |
 | Dialer themes | Custom keypad images for the Phone app. |
 | Config tweaks | Additional system configuration toggles. |
@@ -64,6 +64,7 @@ Or run the **Build Bool IPA** GitHub Actions workflow manually from the Actions 
 ## Warnings
 
 - **Back up your device before use.** Any tool of this kind carries a risk of data loss.
+- Forcing Always-On Display on unsupported hardware can make tap to wake unreliable and freeze the lock screen music player; the app warns about this when you enable it. Turn the toggle off if you hit those issues.
 - MobileGestalt edits target the system's MobileGestalt cache. Whether they persist across a reboot depends on the write mode and iOS version behavior; the app includes an "Overwrite Atomically" option related to this.
 - Some tweaks can render specific device configurations unstable or unusable. Read each in-app warning before enabling a tweak.
 - Tweak behavior depends on the device and, in some cases, Apple's servers. A tweak not working is not necessarily a bug in the app.

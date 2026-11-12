@@ -4,6 +4,8 @@
 //
 //  Created by lunginspector on 8/20/26.
 //
+//  Shared button styles used across the app's lists and sheets.
+//
 
 import SwiftUI
 

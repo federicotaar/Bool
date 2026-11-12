@@ -4,6 +4,8 @@
 //
 //  Created by lunginspector on 8/19/26.
 //
+//  Loads, caches, and writes MobileGestalt values, including the atomic-overwrite option.
+//
 
 import SwiftUI
 

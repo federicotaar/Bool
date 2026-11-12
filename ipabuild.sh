@@ -85,3 +85,8 @@ else
 mv "$WORKING_LOCATION/build/$APPLICATION_NAME.ipa" .
 fi
 rm -rf "$WORKING_LOCATION/build/"
+if [[ $* == *--debug* ]]; then
+    echo "[+] Built ./$APPLICATION_NAME.debug.ipa"
+else
+    echo "[+] Built ./$APPLICATION_NAME.ipa"
+fi

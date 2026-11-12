@@ -11,7 +11,7 @@
 # renames the packaged IPA to Bool.ipa. See docs/BUILDING.md.
 #
 
-set -e
+set -euo pipefail
 
 cd "$(dirname "$0")"
 

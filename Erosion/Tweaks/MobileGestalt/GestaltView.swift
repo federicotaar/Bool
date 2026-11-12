@@ -84,7 +84,7 @@ struct GestaltView: View {
                             PlainToggle("Enable Dynamic Island", minVrs: 19.0, isOn: store.mgKeyBinding([MGKey.island]))
                         }
                         if !isAODHD() || mgOverrideGates {
-                            PlainToggle("Enable AOD", minVrs: 18.0, isOn: store.mgKeyBinding([MGKey.AOD, MGKey.AOTime]))
+                            PlainToggle("Enable AOD", infoType: .warning, infoMessage: MGMsg.aodUnsupported, minVrs: 18.0, isOn: store.mgKeyBinding([MGKey.AOD, MGKey.AOTime]))
                             if store.isEnabled([MGKey.AOD]) {
                                 PlainToggle("Enable AOD Vibrancy", minVrs: 18.0, isOn: store.mgKeyBinding([MGKey.AODVibrancy]))
                             }

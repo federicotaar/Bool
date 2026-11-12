@@ -4,6 +4,8 @@
 //
 //  Created by lunginspector on 8/26/26.
 //
+//  File manager entry view: starting points for browsing reachable app containers.
+//
 
 import SwiftUI
 

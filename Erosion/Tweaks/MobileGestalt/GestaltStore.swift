@@ -103,12 +103,8 @@ final class GestaltStore: ObservableObject {
     }
     
     func isEnabled(_ keys: [String], enableValue: Int = 1) -> Bool {
-        let values = self.cacheExtra[keys] as? [Int] ?? []
-        let testVal = self.cacheExtra[keys.first!] as? Int
-        if values.allSatisfy({ $0 == testVal }) {
-            return testVal == enableValue
-        }
-        return false
+        guard !keys.isEmpty else { return false }
+        return keys.allSatisfy { (self.cacheExtra[$0] as? Int) == enableValue }
     }
     
     func strVal(forKey key: String) -> String {
@@ -119,10 +115,11 @@ final class GestaltStore: ObservableObject {
     // MARK: bindings
     func mgKeyBinding(_ keys: [String], defaultValue: Int = 0, enableValue: Int = 1) -> Binding<Bool> {
         return Binding(get: {
-            if let value = self.cacheExtra[keys.first!] as? Int {
-                return value == enableValue
+            guard let firstKey = keys.first,
+                  let value = self.cacheExtra[firstKey] as? Int else {
+                return false
             }
-            return false
+            return value == enableValue
         }, set: { enabled in
             self.objectWillChange.send()
             for key in keys {
@@ -137,10 +134,11 @@ final class GestaltStore: ObservableObject {
     
     func mgTrollPadBinding() -> Binding<Bool> {
         return Binding(get: {
-            if let value = self.cacheExtra[MGKey.ipadosCacheEx.first!] as? Int? {
-                return value == 1
+            guard let firstKey = MGKey.ipadosCacheEx.first,
+                  let value = self.cacheExtra[firstKey] as? Int else {
+                return false
             }
-            return false
+            return value == 1
         }, set: { enabled in
             self.objectWillChange.send()
             if self.mgSetiPadOS(enable: enabled) {

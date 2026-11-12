@@ -4,6 +4,8 @@
 //
 //  Created by lunginspector on 4/17/26.
 //
+//  Log view: shows the running operation log so users can see what the app did.
+//
 
 import SwiftUI
 

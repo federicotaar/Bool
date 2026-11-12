@@ -4,6 +4,8 @@
 //
 //  Created by lunginspector on 8/26/26.
 //
+//  Tweaks landing view: lists the tweak categories (MobileGestalt, wallpapers, keypads, config).
+//
 
 import SwiftUI
 

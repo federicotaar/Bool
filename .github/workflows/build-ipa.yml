@@ -56,6 +56,13 @@ jobs:
           /usr/libexec/PlistBuddy -c "Print CFBundleDisplayName" "/tmp/boolcheck/Payload/$APP/Info.plist"
           ls "/tmp/boolcheck/Payload/$APP" | grep -iE 'Assets.car|AppIcon' || echo 'no Assets.car found'
 
+      - name: Upload Bool.ipa as a workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bool-ipa
+          path: Bool.ipa
+          retention-days: 14
+
       - name: Create release (fails if the tag already exists; never overwrites)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

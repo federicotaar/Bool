@@ -15,7 +15,6 @@ let device = UIDevice.current
 let fm = FileManager.default
 var weOnADebugBuild = false
 var pipe = Pipe()
-var sema = DispatchSemaphore(value: 0)
 
 @main
 struct ErosionApp: App {
@@ -64,7 +63,6 @@ struct ErosionApp: App {
                     
                     if data.isEmpty {
                         fh.readabilityHandler = nil
-                        sema.signal()
                         return
                     }
                     

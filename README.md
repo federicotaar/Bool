@@ -33,7 +33,7 @@ Compatibility depends on the worse_query escape remaining unpatched. A future iO
 
 ## Installation
 
-1. Download the latest unsigned IPA from [Releases](../../releases).
+1. Download the latest unsigned IPA from [Releases](https://github.com/federicotaar/Bool/releases) (direct: [`Bool.ipa`](https://github.com/federicotaar/Bool/releases/latest/download/Bool.ipa)).
 2. Sign it with your own Apple ID using SideStore, AltStore, Sideloadly, or a similar tool.
 3. Enterprise or paid distribution certificates can break the App Group the app relies on and are not recommended.
 

@@ -29,7 +29,7 @@ Bool modifies system features and appearance on supported iOS versions without a
 | 27.0 - 27.2.1 | Full |
 | 27.3 beta 1 (24C5037i) | Full |
 
-Compatibility depends on the worse_query escape remaining unpatched. A future iOS update may close it without notice.
+Compatibility depends on the worse_query escape remaining unpatched. A future iOS update may close it without notice. Beta releases (such as 27.3 beta 1) are verified as best effort and can break between beta builds.
 
 ## Installation
 

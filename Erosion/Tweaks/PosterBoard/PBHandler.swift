@@ -35,6 +35,8 @@ final class PBHandler {
         let rawURL = URL.temporaryDirectory.appendingPathComponent("ImportedTendies_\(url.lastPathComponent)_\(UUID())")
         do {
             try Compression.shared.extract(path: url, to: rawURL)
+            // descriptors get moved out below; anything left behind is scratch data
+            defer { try? fm.removeItem(at: rawURL) }
             
             // before anything else, we need to get the urls at which the descriptors are stored. the only problem: importing this SUCKS SO MUCH BECAUSE NO ONE MADE A SPECIFIC FORMAT THAT .tendies SHOULD BE STRUCTRED IN!!!
             // this won't be fun.

@@ -72,7 +72,7 @@ ldid -S"$WORKING_LOCATION/Erosion/Erosion.entitlements" "$TARGET_APP"
 
 echo "[*] Packaging..."
 mkdir Payload
-cp -r $APPLICATION_NAME.app Payload/$APPLICATION_NAME.app
+cp -r "$APPLICATION_NAME.app" "Payload/$APPLICATION_NAME.app"
 zip -9vr $APPLICATION_NAME.ipa Payload
 
 echo "[*] All done, cleaning up..."

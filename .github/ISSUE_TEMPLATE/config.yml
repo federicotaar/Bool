@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: FAQ
+    url: https://github.com/federicotaar/Bool/blob/main/docs/FAQ.md
+    about: Common questions (reboots, compatibility, signing) answered here first.
+  - name: worse_query (upstream sandbox escape)
+    url: https://github.com/forcequitOS/worse_query
+    about: Issues with the underlying escape itself belong to its own project.

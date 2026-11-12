@@ -266,8 +266,9 @@ struct PosterBoardView: View {
     }
     
     private func doSetupStuff() {
-        if pbContainerPath.isEmpty {
-            pbContainerPath = fsHandlers.getContainerPath(forMatch: "com.apple.PosterBoard")
+        var containerPath = pbContainerPath
+        if containerPath.isEmpty {
+            containerPath = fsHandlers.getContainerPath(forMatch: "com.apple.PosterBoard")
         }
         if !fm.fileExists(atPath: AppURL.pb.path) {
             do {
@@ -277,7 +278,11 @@ struct PosterBoardView: View {
                 Alertinator.shared.alert(title: "Failed to setup PosterBoard tweaks!", body: AppMsg.opFailed)
             }
         }
-        isReady = true
+        // view state must be touched on the main thread
+        DispatchQueue.main.async {
+            pbContainerPath = containerPath
+            isReady = true
+        }
     }
     
     private func applyObjects(_ objects: [TendiesObject]) -> (Bool, String) {

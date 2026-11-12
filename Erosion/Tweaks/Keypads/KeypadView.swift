@@ -149,14 +149,19 @@ struct KeypadView: View {
         }
         .onAppear {
             DispatchQueue.global(qos: .userInitiated).async {
-                if mpContainerPath.isEmpty {
-                    mpContainerPath = fsHandlers.getContainerPath(forMatch: "com.apple.mobilephone")
+                var containerPath = mpContainerPath
+                if containerPath.isEmpty {
+                    containerPath = fsHandlers.getContainerPath(forMatch: "com.apple.mobilephone")
                 }
-                if !fm.isReadableFile(atPath: mpContainerPath) {
-                    let _ = wq.grantAccess(path: mpContainerPath)
+                if !fm.isReadableFile(atPath: containerPath) {
+                    let _ = wq.grantAccess(path: containerPath)
                 }
-                kpMgr.getCurrentKeypads(size: size, saveOgData: true)
-                isReady = true
+                // view state and the observable keypad store must be touched on the main thread
+                DispatchQueue.main.async {
+                    mpContainerPath = containerPath
+                    kpMgr.getCurrentKeypads(size: size, saveOgData: true)
+                    isReady = true
+                }
             }
         }
         .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.item]) { result in

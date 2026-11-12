@@ -2,7 +2,7 @@
   <img src="Erosion/Resources/AppIcon.icon/Assets/bool-icon-rounded.png" alt="Bool icon" width="150">
   <h1>Bool</h1>
   <p>An iOS customization toolbox built on the <a href="https://github.com/forcequitOS/worse_query">worse_query</a> sandbox escape.</p>
-  <a href="https://github.com/federicotaar/Bool/releases"><img alt="Releases" src="https://img.shields.io/badge/Releases-v2026.11.12.1-1f6feb?style=for-the-badge"></a>
+  <a href="https://github.com/federicotaar/Bool/releases"><img alt="Releases" src="https://img.shields.io/badge/Releases-v2026.11.13.1-1f6feb?style=for-the-badge"></a>
 </div>
 
 ---

@@ -3,6 +3,20 @@
 All notable changes to Bool are documented here. Release versions use the
 `YYYY.MM.DD.N` scheme (date of the build plus a per-day counter).
 
+## [2026.11.13.1] - 2026-11-13
+
+### Fixed
+- Custom Height no longer silently does nothing: the numeric field used a
+  format-style binding that only commits when editing ends, and the number pad
+  has no return key, so pressing Apply wrote the previously stored value
+  instead of the typed one. Picking a preset worked because a picker commits
+  instantly, which made the bug look like the feature itself was broken.
+
+### Changed
+- Custom Height is now a slider with a live preview of where the Dynamic
+  Island will sit relative to the notch, plus the exact value next to it.
+  Drag, watch the preview, then Apply.
+
 ## [2026.11.12.1] - 2026-11-12
 
 ### Added

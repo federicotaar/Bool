@@ -73,8 +73,29 @@ struct GestaltView: View {
                         .buttonStyle(.plain)
                     }
                     if mgSubtype == -1 {
-                        TextField("Custom Subtype Value", value: $mgCustomSubtype, format: .number)
-                            .keyboardType(.numberPad)
+                        VStack(alignment: .leading, spacing: 10) {
+                            IslandPositionPreview(subtype: mgCustomSubtype, range: customSubtypeRange)
+                                .frame(height: 170)
+                                .padding(.top, 4)
+                            HStack {
+                                Text("Height")
+                                Spacer()
+                                Text("\(mgCustomSubtype)")
+                                    .monospacedDigit()
+                                    .foregroundStyle(.secondary)
+                            }
+                            Slider(
+                                value: Binding(
+                                    get: { Double(mgCustomSubtype) },
+                                    set: { mgCustomSubtype = Int($0.rounded()) }
+                                ),
+                                in: customSubtypeRange,
+                                step: 1
+                            )
+                            Text("Drag to preview where the island will sit, then Apply. Higher values move it lower; your original height is \(mgOgSubtype).")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                     Toggle("Custom Device Name", isOn: $mgEnableDeviceName)
                     if mgEnableDeviceName {
@@ -386,6 +407,14 @@ struct GestaltView: View {
         return [:]
     }
     
+    // slider span for the custom subtype: a bit below the original height (island
+    // rises) up to well past it (island sinks); 2532 is a safe fallback if the
+    // original gestalt could not be read
+    private var customSubtypeRange: ClosedRange<Double> {
+        let og = mgOgSubtype > 0 ? mgOgSubtype : 2532
+        return Double(max(2200, og - 200))...Double(og + 400)
+    }
+
     private func mgApply(isFromSheet: Bool = false) {
         do {
             let mgDictToApply = store.mgCurrentDict
@@ -453,6 +482,46 @@ struct GestaltView: View {
         } catch {
             print("(mg) failed to revert mobilegestalt: \(error.localizedDescription)")
             Alertinator.shared.alert(title: "Failed to revert MobileGestalt!", body: AppMsg.opFailed)
+        }
+    }
+}
+
+// approximate on-screen preview of where the Dynamic Island will sit for a given
+// ArtworkDeviceSubType: across the slider range the island travels from overlapping
+// the notch (lowest value) to clearly below it (highest value)
+private struct IslandPositionPreview: View {
+    let subtype: Int
+    let range: ClosedRange<Double>
+
+    private var fraction: Double {
+        let span = range.upperBound - range.lowerBound
+        guard span > 0 else { return 0.5 }
+        return min(1, max(0, (Double(subtype) - range.lowerBound) / span))
+    }
+
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width
+            let h = geo.size.height
+            let barH: CGFloat = 13
+            let topY: CGFloat = 8            // overlapping the notch
+            let bottomY: CGFloat = h * 0.45  // clearly below the notch
+            let islandY = topY + (bottomY - topY) * fraction
+            ZStack(alignment: .top) {
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .fill(Color(.secondarySystemBackground))
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .strokeBorder(Color(.separator), lineWidth: 1)
+                Capsule()
+                    .fill(Color.primary)
+                    .frame(width: w * 0.5, height: barH)
+                    .offset(y: topY)
+                Capsule()
+                    .fill(Color.accentColor)
+                    .frame(width: w * 0.38, height: barH)
+                    .offset(y: islandY)
+                    .animation(.easeOut(duration: 0.1), value: islandY)
+            }
         }
     }
 }

@@ -4,6 +4,8 @@
 //
 //  Created by lunginspector on 8/21/26.
 //
+//  Config tweaks view: additional system configuration toggles outside the main categories.
+//
 
 import SwiftUI
 

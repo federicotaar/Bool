@@ -4,6 +4,8 @@
 //
 //  Created by lunginspector on 9/8/26.
 //
+//  Editor for arbitrary MobileGestalt keys entered by hand.
+//
 
 import SwiftUI
 

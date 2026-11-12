@@ -2,6 +2,11 @@ name: Verify built icon
 
 on:
   workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release tag to verify, e.g. 2026.11.10.1'
+        required: true
+        default: '2026.11.10.1'
 
 permissions:
   contents: write

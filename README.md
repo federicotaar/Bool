@@ -37,6 +37,10 @@ Compatibility depends on the worse_query escape remaining unpatched. A future iO
 2. Sign it with your own Apple ID using SideStore, AltStore, Sideloadly, or a similar tool.
 3. Enterprise or paid distribution certificates can break the App Group the app relies on and are not recommended.
 
+A free Apple ID works but the app expires after 7 days: refresh it from your
+signing tool (on the same Wi-Fi network) or reinstall. Details in
+[docs/INSTALL.md](docs/INSTALL.md).
+
 ## Building from source
 
 A macOS machine with Xcode 26 is required:

@@ -95,10 +95,10 @@ struct GestaltView: View {
                                 PlainToggle("Enable AOD Vibrancy", minVrs: 18.0, isOn: store.mgKeyBinding([MGKey.AODVibrancy]))
                             }
                         }
-                        if !isBootChimeHD() || mgOverrideGates {
+                        if !isChargeLimitHD() || mgOverrideGates {
                             PlainToggle("Enable Charge Limit", minVrs: 17.0, isOn: store.mgKeyBinding([MGKey.chargeLim]))
                         }
-                        if !isChargeLimitHD() || mgOverrideGates {
+                        if !isBootChimeHD() || mgOverrideGates {
                             PlainToggle("Enable Boot Chime", isOn: store.mgKeyBinding([MGKey.bootChime]))
                         }
                     } header: {

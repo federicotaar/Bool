@@ -4,6 +4,8 @@
 //
 //  Created by lunginspector on 8/14/26.
 //
+//  App entry point: builds the root scene and wires up the shared app state.
+//
 
 import SwiftUI
 import Combine

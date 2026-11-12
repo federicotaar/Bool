@@ -92,7 +92,9 @@ enum KPMsg {
     static let applyComp = "For changes to take effect, open the Phone app and change the appearance until your custom keys show up. You can also restart your device. Do NOT force kill the Phone app!"
 }
 
-let kp = KeypadManager()
+// single shared instance - a second ObservableObject copy would silently
+// diverge from the one the views observe
+let kp = KeypadManager.shared
 final class KeypadManager: ObservableObject {
     static let shared = KeypadManager()
     
@@ -131,6 +133,9 @@ final class KeypadManager: ObservableObject {
     func applyKeypadItems() -> Bool {
         var failed = 0
         for item in mpKeypad {
+            // keys without an image keep whatever is currently in the cache;
+            // writing empty data would blank those keys in the Phone app
+            guard !item.imgData.isEmpty else { continue }
             let files = item.kpID.fileNames
             for fileName in files {
                 let finalURL = URL(fileURLWithPath: mpContainerPath()).appendingPathComponent("Library/Caches/TelephonyUI-10").appendingPathComponent(fileName)
@@ -142,10 +147,7 @@ final class KeypadManager: ObservableObject {
                 }
             }
         }
-        if failed == 0 {
-            return true
-        }
-        return false
+        return failed == 0
     }
     
     func resetKeypadItems() -> Bool {
@@ -164,11 +166,9 @@ final class KeypadManager: ObservableObject {
     }
     
     func clearKeypads() {
-        for keypad in mpKeypad {
-            if let index = mpKeypad.firstIndex(where: { $0.id == keypad.id }) {
-                mpKeypad[index].ogImgData = Data()
-                mpKeypad[index].imgData = Data()
-            }
+        for index in mpKeypad.indices {
+            mpKeypad[index].ogImgData = Data()
+            mpKeypad[index].imgData = Data()
         }
     }
     
@@ -187,27 +187,24 @@ final class KeypadManager: ObservableObject {
     }
     
     func getCurrentKeypads(size: KPSize = KPSize.defSize, custW: Int = 0, custH: Int = 0, saveOgData: Bool = false) {
-        do {
-            let filesURL = URL(fileURLWithPath: mpContainerPath()).appendingPathComponent("Library/Caches/TelephonyUI-10")
-            for kpId in KeypadID.allCases {
-                let fileName = kpId.getAccentedFileName()
-                let url = filesURL.appendingPathComponent(fileName)
-                let data = try Data(contentsOf: url)
-                let imgData = {
-                    switch size {
-                    case .defSize: return resizeAndRet(withData: data, isDefault: true)
-                    case .custom: return resizeAndRet(withData: data, customSize: CGSize(width: custW, height: custH))
-                    default: return resizeAndRet(withData: data, newSize: size.float)
-                    }
-                }()
-                if saveOgData {
-                    updateKeypadItem(forID: kpId, withData: imgData, ogData: imgData)
-                } else {
-                    updateKeypadItem(forID: kpId, withData: imgData)
+        let filesURL = URL(fileURLWithPath: mpContainerPath()).appendingPathComponent("Library/Caches/TelephonyUI-10")
+        for kpId in KeypadID.allCases {
+            let fileName = kpId.getAccentedFileName()
+            let url = filesURL.appendingPathComponent(fileName)
+            // a key with no cached image shouldn't stop the rest from loading
+            guard let data = try? Data(contentsOf: url) else { continue }
+            let imgData = {
+                switch size {
+                case .defSize: return resizeAndRet(withData: data, isDefault: true)
+                case .custom: return resizeAndRet(withData: data, customSize: CGSize(width: custW, height: custH))
+                default: return resizeAndRet(withData: data, newSize: size.float)
                 }
+            }()
+            if saveOgData {
+                updateKeypadItem(forID: kpId, withData: imgData, ogData: imgData)
+            } else {
+                updateKeypadItem(forID: kpId, withData: imgData)
             }
-        } catch {
-            // keypads could've been reset so nothing to log here, logs are just gonna spit out nonsense
         }
     }
     
@@ -244,8 +241,11 @@ final class KeypadManager: ObservableObject {
     func importTheme(fromURL fileURL: URL) -> Bool {
         do {
             // create a temp dir for extraction
-            var filesURL = URL.temporaryDirectory.appendingPathComponent(fileURL.deletingPathExtension().lastPathComponent + "_\(UUID())_EROSIONTMP")
+            let tempRootURL = URL.temporaryDirectory.appendingPathComponent(fileURL.deletingPathExtension().lastPathComponent + "_\(UUID())_EROSIONTMP")
+            var filesURL = tempRootURL
             try fm.createDirectory(at: filesURL, withIntermediateDirectories: true)
+            // the extracted folder is only read from; remove it when done
+            defer { try? fm.removeItem(at: tempRootURL) }
             try Compression.shared.extract(path: fileURL, to: filesURL)
             let dirURLs = try fm.contentsOfDirectory(at: filesURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
             if dirURLs.count < 1 {

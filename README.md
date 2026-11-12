@@ -68,6 +68,17 @@ Or run the **Build Bool IPA** GitHub Actions workflow manually from the Actions 
 - Some tweaks can render specific device configurations unstable or unusable. Read each in-app warning before enabling a tweak.
 - Tweak behavior depends on the device and, in some cases, Apple's servers. A tweak not working is not necessarily a bug in the app.
 
+## Repository structure
+
+| Path | Contents |
+| --- | --- |
+| `Erosion/` | App source (target keeps the upstream name; see docs/FAQ.md) |
+| `Erosion.xcodeproj/` | Xcode project |
+| `.github/workflows/` | IPA build and icon verification workflows |
+| `build-verification/` | Compiled-icon reports committed by CI |
+| `docs/` | Install, build, tweak and release documentation |
+| `ipabuild.sh` | Local unsigned-IPA build script |
+
 ## License
 
 [GNU General Public License v3.0](LICENSE)

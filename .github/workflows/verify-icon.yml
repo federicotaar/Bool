@@ -21,7 +21,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release download 2026.11.10.1 --pattern Bool.ipa
+          gh release download "${{ github.event.inputs.release }}" --pattern Bool.ipa
           rm -rf x && mkdir x && unzip -q Bool.ipa -d x
           APP=$(ls x/Payload)
           echo "App bundle: $APP"

@@ -21,9 +21,7 @@ echo "[*] $APPLICATION_NAME Build Script"
 
 rm -rf build
 
-if ls *.ipa 1> /dev/null 2>&1; then
-    rm -rf *.ipa
-fi
+rm -f ./*.ipa
 
 WORKING_LOCATION="$(pwd)"
 

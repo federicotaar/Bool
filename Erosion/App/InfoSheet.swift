@@ -4,6 +4,8 @@
 //
 //  Created by lunginspector on 8/20/26.
 //
+//  Reusable info sheet presented for explanations and about text.
+//
 
 import SwiftUI
 

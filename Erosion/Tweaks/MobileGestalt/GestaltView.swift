@@ -26,6 +26,7 @@ struct GestaltView: View {
     @State private var mgEnableDeviceName = false
     @AppStorage("mgDeviceName") private var mgDeviceName = ""
     @AppStorage("ogMachineName") private var ogMachineName = ""
+    @AppStorage("mgCustomSubtype") private var mgCustomSubtype = 2436
     @AppStorage("showRegionTweak") private var showRegionTweak = false
     @AppStorage("showCustomKeys") private var showCustomKeys = false
     @AppStorage("mgCustKeyArray") var customKeys: [MGCustomKey] = []
@@ -60,6 +61,7 @@ struct GestaltView: View {
                             if isHomeButtonHD() {
                                 Text("iPhone X Gestures").tag(2436)
                             }
+                            Text("Custom Height...").tag(-1)
                         }
                         Spacer()
                         Button {
@@ -69,6 +71,10 @@ struct GestaltView: View {
                                 .frame(width: 24, height: 22)
                         }
                         .buttonStyle(.plain)
+                    }
+                    if mgSubtype == -1 {
+                        TextField("Custom Subtype Value", value: $mgCustomSubtype, format: .number)
+                            .keyboardType(.numberPad)
                     }
                     Toggle("Custom Device Name", isOn: $mgEnableDeviceName)
                     if mgEnableDeviceName {
@@ -357,6 +363,12 @@ struct GestaltView: View {
             if let cacheExtra = currentDict["CacheExtra"] as? NSDictionary,
                let artwork = cacheExtra[MGKey.artwork] as? NSDictionary {
                 mgSubtype = artwork["ArtworkDeviceSubType"] as? Int ?? 0
+                let knownSubtypes = [mgOgSubtype, 2436, 2796, 2976, 2622, 2868, 2736, 2670]
+                if !knownSubtypes.contains(mgSubtype) {
+                    // the current subtype isn't one of the presets, so surface it as a manual value
+                    mgCustomSubtype = mgSubtype
+                    mgSubtype = -1
+                }
                 mgDeviceName = artwork["ArtworkDeviceProductDescription"] as? String ?? ""
                 if mgDeviceName != mgOgDeviceName {
                     mgEnableDeviceName = true
@@ -380,7 +392,10 @@ struct GestaltView: View {
             
             if let cacheExtra = mgDictToApply["CacheExtra"] as? NSMutableDictionary,
                let artwork = cacheExtra[MGKey.artwork] as? NSMutableDictionary {
-                artwork["ArtworkDeviceSubType"] = mgSubtype
+                // a manually entered subtype always wins when selected; fall back to the
+                // original subtype if the custom value isn't a plausible positive number
+                let subtypeToApply = mgSubtype == -1 ? mgCustomSubtype : mgSubtype
+                artwork["ArtworkDeviceSubType"] = subtypeToApply > 0 ? subtypeToApply : mgOgSubtype
                 if mgEnableDeviceName {
                     artwork["ArtworkDeviceProductDescription"] = mgDeviceName
                 }

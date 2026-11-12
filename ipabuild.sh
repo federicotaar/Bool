@@ -1,4 +1,15 @@
 #!/bin/bash
+#
+# ipabuild.sh - build an unsigned Bool IPA from source.
+#
+# Usage:
+#   ./ipabuild.sh           release build -> Erosion.ipa
+#   ./ipabuild.sh --debug   debug build   -> Erosion.debug.ipa
+#
+# Requires: macOS, Xcode 26, and ldid (brew install ldid).
+# The Xcode target keeps the upstream name "Erosion"; the release workflow
+# renames the packaged IPA to Bool.ipa. See docs/BUILDING.md.
+#
 
 set -e
 

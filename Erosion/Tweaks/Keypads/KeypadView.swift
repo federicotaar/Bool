@@ -4,6 +4,8 @@
 //
 //  Created by lunginspector on 8/28/26.
 //
+//  Dialer theme UI for picking and applying keypad images.
+//
 
 import SwiftUI
 

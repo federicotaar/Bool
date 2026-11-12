@@ -7,7 +7,8 @@ warning, which you should read before enabling it.
 ## MobileGestalt tweaks (`Erosion/Tweaks/MobileGestalt/`)
 
 Toggles hidden device capabilities reported by MobileGestalt, such as
-Dynamic Island, Always-On Display, the 80% charge limit, the boot chime, and
+Dynamic Island (with preset or manually entered heights), Always-On Display,
+the 80% charge limit, the boot chime, and
 internal build flags. **iOS 27 only.** The app writes to the MobileGestalt
 cache; whether edits persist across a reboot depends on the write mode (the
 app offers an "Overwrite Atomically" option) and on iOS version behavior.

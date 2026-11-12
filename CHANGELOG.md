@@ -3,6 +3,34 @@
 All notable changes to Bool are documented here. Release versions use the
 `YYYY.MM.DD.N` scheme (date of the build plus a per-day counter).
 
+## [Unreleased]
+
+### Added
+- "Custom Height..." entry in the Dynamic Island subtype picker: the subtype
+  value can now be typed in manually instead of being limited to the presets.
+  The choice persists in-app and is never applied automatically.
+- Warning on the Always-On Display toggle about the documented side effects
+  on unsupported (non-LTPO) hardware: unreliable tap to wake and a
+  non-responsive lock screen music player.
+
+### Fixed
+- Charge Limit and Boot Chime toggles were gated on each other's hardware
+  support, so the wrong one could be hidden on devices with only one of them.
+- Applying a lock screen footnote no longer discards other keys already
+  present in SharedDeviceConfiguration.plist.
+- Dialer keys with no cached image no longer stop the remaining keys from
+  loading, and applying a theme no longer writes empty images over unedited
+  keys (which blanked them in the Phone app).
+- Keypad and wallpaper setup no longer mutate view state from a background
+  thread.
+
+### Changed
+- `GestaltStore.isEnabled` now actually tests every key it is given.
+- The ten hardware-capability checks share one lookup helper; device lists
+  are unchanged.
+- Temporary extraction folders are cleaned up after wallpaper and keypad
+  theme imports.
+
 ## [2026.11.10.1] - 2026-11-10
 
 First public release.

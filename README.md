@@ -47,6 +47,16 @@ A macOS machine with Xcode 26 is required:
 
 Or run the **Build Bool IPA** GitHub Actions workflow manually from the Actions tab, providing a new version number. The workflow produces an unsigned IPA and creates a non-overwriting release.
 
+## Documentation
+
+- [Install guide](docs/INSTALL.md) - sideloading with AltStore, SideStore or Sideloadly
+- [Build from source](docs/BUILDING.md) - local builds and the release workflow
+- [Tweak categories](docs/TWEAKS.md) - what each part of the app touches
+- [FAQ](docs/FAQ.md) - reboots, compatibility, signing questions
+- [App icon pipeline](docs/ICON.md) - how the Bool icon is built and verified
+- [Releasing](docs/RELEASING.md) - versioning and publishing new builds
+- [Changelog](CHANGELOG.md)
+
 ## Warnings
 
 - **Back up your device before use.** Any tool of this kind carries a risk of data loss.

@@ -4,6 +4,8 @@
 //
 //  Created by lunginspector on 8/14/26.
 //
+//  Root view: hosts the main navigation and the app's top-level sections.
+//
 
 import SwiftUI
 

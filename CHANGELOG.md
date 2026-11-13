@@ -3,19 +3,32 @@
 All notable changes to Bool are documented here. Release versions use the
 `YYYY.MM.DD.N` scheme (date of the build plus a per-day counter).
 
+## [2026.11.13.2] - 2026-11-13
+
+### Corrected
+- Removed the free-height slider and animated position preview. ArtworkDeviceSubType
+  chooses a system layout profile, not a pixel offset. The earlier preview was not
+  connected to SpringBoard and did not predict the actual position. The earlier
+  claim that a larger number always moves the island down was incorrect.
+- Corrected the iPhone 14 Pro profile from 2436 (iPhone X gestures) to 2556.
+- Existing unrecognized profile values are preserved, not silently reset.
+- Explicitly copy and reattach nested artwork/cache dictionaries before serialization.
+- Read back the saved profile after a write. A mismatch or unreadable cache prevents
+  a success message and automatic respring. A read-only Check Saved Profile button
+  distinguishes the file value from what SpringBoard displays.
+
+### Limits
+- This build does not provide arbitrary positioning under the notch. Profiles may
+  affect layout differently by iOS version and Display Zoom. No display-resolution
+  edits, new exploits or SpringBoard injection were added; the writer is unchanged.
+- Compilation and fixture-plist tests do not validate device behavior. No main-phone
+  testing has been performed by the maintainer for this correction.
+
 ## [2026.11.13.1] - 2026-11-13
 
-### Fixed
-- Custom Height no longer silently does nothing: the numeric field used a
-  format-style binding that only commits when editing ends, and the number pad
-  has no return key, so pressing Apply wrote the previously stored value
-  instead of the typed one. Picking a preset worked because a picker commits
-  instantly, which made the bug look like the feature itself was broken.
-
-### Changed
-- Custom Height is now a slider with a live preview of where the Dynamic
-  Island will sit relative to the notch, plus the exact value next to it.
-  Drag, watch the preview, then Apply.
+Replaced the numeric input with a slider and illustrative animation. The claimed
+continuous positioning fix was not valid: the app only wrote a device profile.
+This release is superseded by 2026.11.13.2. See the correction above.
 
 ## [2026.11.12.1] - 2026-11-12
 

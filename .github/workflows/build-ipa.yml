@@ -42,6 +42,9 @@ jobs:
       - name: Install ldid
         run: brew install ldid
 
+      - name: Test profile serialization with harmless fixture plists
+        run: python3 verify-profile-serialization.py
+
       - name: Build IPA
         run: ./ipabuild.sh
 
@@ -69,7 +72,7 @@ jobs:
         run: |
           gh release create "${{ inputs.version }}" Bool.ipa \
             --title "Bool ${{ inputs.version }}" \
-            --notes "Unsigned Bool build: home-screen name Bool, cloud icon, internal UI unchanged from the original project. Sideload with your own Apple ID (SideStore, AltStore, Sideloadly)."
+            --notes "Unsigned Bool correction build. Dynamic Island uses real system layout profiles, not a continuous height slider. Corrects iPhone 14 Pro profile (2556), reattaches nested plist edits and verifies the saved subtype before success/respring. Does not provide arbitrary sub-notch placement. No display-resolution changes or new injection/exploit code. Compiled and fixture-tested, not device-verified. Install over the existing app to preserve its saved original cache. Sideload with your own Apple ID. See CHANGELOG.md for details."
 
       - name: Release summary
         run: |

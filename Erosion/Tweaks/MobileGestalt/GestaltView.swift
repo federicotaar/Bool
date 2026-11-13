@@ -26,7 +26,7 @@ struct GestaltView: View {
     @State private var mgEnableDeviceName = false
     @AppStorage("mgDeviceName") private var mgDeviceName = ""
     @AppStorage("ogMachineName") private var ogMachineName = ""
-    @AppStorage("mgCustomSubtype") private var mgCustomSubtype = 2436
+    @State private var mgSavedSubtype: Int?
     @AppStorage("showRegionTweak") private var showRegionTweak = false
     @AppStorage("showCustomKeys") private var showCustomKeys = false
     @AppStorage("mgCustKeyArray") var customKeys: [MGCustomKey] = []
@@ -40,12 +40,12 @@ struct GestaltView: View {
             List {
                 Section {
                     HStack {
-                        Picker("Subtype", selection: $mgSubtype) {
+                        Picker("Layout Profile", selection: $mgSubtype) {
                             Text("Original (\(mgOgSubtype))").tag(mgOgSubtype)
                             if isDynamIslandHD() && doubleSysVrs() < 19.0 {
                                 Text("Disable Dynamic Island").tag(2436)
                             }
-                            Text("iPhone 14 Pro").tag(2436)
+                            Text("iPhone 14 Pro (2556)").tag(2556)
                             Text("iPhone 14 Pro Max").tag(2796)
                             Text("iPhone 15 Pro Max").tag(2976)
                             if doubleSysVrs() >= 18.0 {
@@ -61,7 +61,9 @@ struct GestaltView: View {
                             if isHomeButtonHD() {
                                 Text("iPhone X Gestures").tag(2436)
                             }
-                            Text("Custom Height...").tag(-1)
+                            if !knownSubtypes.contains(mgSubtype) && mgSubtype > 0 {
+                                Text("Current unrecognized profile (\(mgSubtype))").tag(mgSubtype)
+                            }
                         }
                         Spacer()
                         Button {
@@ -72,29 +74,21 @@ struct GestaltView: View {
                         }
                         .buttonStyle(.plain)
                     }
-                    if mgSubtype == -1 {
-                        VStack(alignment: .leading, spacing: 10) {
-                            IslandPositionPreview(subtype: mgCustomSubtype, range: customSubtypeRange)
-                                .frame(height: 170)
-                                .padding(.top, 4)
-                            HStack {
-                                Text("Height")
-                                Spacer()
-                                Text("\(mgCustomSubtype)")
-                                    .monospacedDigit()
-                                    .foregroundStyle(.secondary)
-                            }
-                            Slider(
-                                value: Binding(
-                                    get: { Double(mgCustomSubtype) },
-                                    set: { mgCustomSubtype = Int($0.rounded()) }
-                                ),
-                                in: customSubtypeRange,
-                                step: 1
-                            )
-                            Text("Drag to preview where the island will sit, then Apply. Higher values move it lower; your original height is \(mgOgSubtype).")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
+                    Text("Profiles select system layouts, not a height in pixels. Bool cannot preview or freely position the system Dynamic Island. A larger profile number does not guarantee a lower island. Apply and respring to test a profile; layout depends on iOS and Display Zoom.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    if let saved = mgSavedSubtype {
+                        Text("Saved cache profile: \(saved). This does not confirm the visible system layout.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                    Button("Check Saved Profile") {
+                        do {
+                            let saved = try mgReadSavedSubtype()
+                            mgSavedSubtype = saved
+                            Alertinator.shared.alert(title: "Saved cache profile: \(saved)", body: "This is read from the MobileGestalt file, not from the slider or app preferences. It does not confirm that SpringBoard uses this layout. Respring after applying. If the island still does not move, this profile may not affect its position on your iOS version.")
+                        } catch {
+                            Alertinator.shared.alert(title: "Could not verify saved profile", body: error.localizedDescription)
                         }
                     }
                     Toggle("Custom Device Name", isOn: $mgEnableDeviceName)
@@ -384,12 +378,7 @@ struct GestaltView: View {
             if let cacheExtra = currentDict["CacheExtra"] as? NSDictionary,
                let artwork = cacheExtra[MGKey.artwork] as? NSDictionary {
                 mgSubtype = artwork["ArtworkDeviceSubType"] as? Int ?? 0
-                let knownSubtypes = [mgOgSubtype, 2436, 2796, 2976, 2622, 2868, 2736, 2670]
-                if !knownSubtypes.contains(mgSubtype) {
-                    // the current subtype isn't one of the presets, so surface it as a manual value
-                    mgCustomSubtype = mgSubtype
-                    mgSubtype = -1
-                }
+                mgSavedSubtype = mgSubtype
                 mgDeviceName = artwork["ArtworkDeviceProductDescription"] as? String ?? ""
                 if mgDeviceName != mgOgDeviceName {
                     mgEnableDeviceName = true
@@ -407,27 +396,42 @@ struct GestaltView: View {
         return [:]
     }
     
-    // slider span for the custom subtype: a bit below the original height (island
-    // rises) up to well past it (island sinks); 2532 is a safe fallback if the
-    // original gestalt could not be read
-    private var customSubtypeRange: ClosedRange<Double> {
-        let og = mgOgSubtype > 0 ? mgOgSubtype : 2532
-        return Double(max(2200, og - 200))...Double(og + 400)
+    private var knownSubtypes: Set<Int> {
+        [mgOgSubtype, 2436, 2556, 2796, 2976, 2622, 2868, 2736, 2670]
+    }
+
+    private func mgReadSavedSubtype() throws -> Int {
+        let data = try Data(contentsOf: MGURL.fsGestaltURL)
+        let root = try PropertyListSerialization.propertyList(from: data, options: [], format: nil)
+        guard let dict = root as? [String: Any],
+              let extra = dict["CacheExtra"] as? [String: Any],
+              let artwork = extra[MGKey.artwork] as? [String: Any],
+              let subtype = artwork["ArtworkDeviceSubType"] as? Int else {
+            throw "MobileGestalt has no readable artwork profile. Nothing was verified."
+        }
+        return subtype
     }
 
     private func mgApply(isFromSheet: Bool = false) {
         do {
-            let mgDictToApply = store.mgCurrentDict
-            
-            if let cacheExtra = mgDictToApply["CacheExtra"] as? NSMutableDictionary,
-               let artwork = cacheExtra[MGKey.artwork] as? NSMutableDictionary {
-                // a manually entered subtype always wins when selected; fall back to the
-                // original subtype if the custom value isn't a plausible positive number
-                let subtypeToApply = mgSubtype == -1 ? mgCustomSubtype : mgSubtype
-                artwork["ArtworkDeviceSubType"] = subtypeToApply > 0 ? subtypeToApply : mgOgSubtype
+            guard mgSubtype > 0 else {
+                throw "Choose a valid layout profile before applying."
+            }
+            guard let mgDictToApply = store.mgCurrentDict.mutableCopy() as? NSMutableDictionary else {
+                throw "Could not copy the MobileGestalt cache. Nothing was written."
+            }
+
+            if let sourceExtra = mgDictToApply["CacheExtra"] as? NSDictionary,
+               let cacheExtra = sourceExtra.mutableCopy() as? NSMutableDictionary,
+               let sourceArtwork = cacheExtra[MGKey.artwork] as? NSDictionary,
+               let artwork = sourceArtwork.mutableCopy() as? NSMutableDictionary {
+                artwork["ArtworkDeviceSubType"] = mgSubtype
                 if mgEnableDeviceName {
                     artwork["ArtworkDeviceProductDescription"] = mgDeviceName
                 }
+                // Explicitly reattach both nested dictionaries. Do not depend on
+                // Foundation bridging preserving mutable nested-object identity.
+                cacheExtra[MGKey.artwork] = artwork
                 cacheExtra[MGKey.prodType] = mgProductType
                 for item in customKeys {
                     if item.isOn {
@@ -436,6 +440,7 @@ struct GestaltView: View {
                         cacheExtra.removeObject(forKey: item.key)
                     }
                 }
+                mgDictToApply["CacheExtra"] = cacheExtra
             } else {
                 throw "failed to write keys to mobilegestalt!"
             }
@@ -444,12 +449,18 @@ struct GestaltView: View {
             let res = mgWrite(data)
             
             if res {
-                print("[*] successfully overwrote mobilegestalt!")
+                let savedSubtype = try mgReadSavedSubtype()
+                mgSavedSubtype = savedSubtype
+                guard savedSubtype == mgSubtype else {
+                    throw "The write reported success, but the cache still contains profile \(savedSubtype), not \(mgSubtype). No respring was requested."
+                }
+                store.mgCurrentDict = mgDictToApply
+                print("[*] mobilegestalt artwork profile read back: \(savedSubtype)")
                 Haptic.shared.play(.soft)
                 if autoRespring || isFromSheet {
                     mgr.shouldRespring = true
                 } else {
-                    Alertinator.shared.alert(title: "Successfully appiled MobileGestalt tweaks!", body: AppMsg.applied + (store.isEnabled([MGKey.appIntell]) ? " You'll have to reboot your device if you want to use Apple Intelligence." : ""), actionLabel: "Respring", action: { mgr.shouldRespring = true })
+                    Alertinator.shared.alert(title: "MobileGestalt cache profile verified", body: "Profile \(savedSubtype) is saved. Respring to reload system UI. This verifies the file, not the island position. " + AppMsg.applied + (store.isEnabled([MGKey.appIntell]) ? " You'll have to reboot your device if you want to use Apple Intelligence." : ""), actionLabel: "Respring", action: { mgr.shouldRespring = true })
                 }
             } else {
                 throw "overwrite failed!"
@@ -482,46 +493,6 @@ struct GestaltView: View {
         } catch {
             print("(mg) failed to revert mobilegestalt: \(error.localizedDescription)")
             Alertinator.shared.alert(title: "Failed to revert MobileGestalt!", body: AppMsg.opFailed)
-        }
-    }
-}
-
-// approximate on-screen preview of where the Dynamic Island will sit for a given
-// ArtworkDeviceSubType: across the slider range the island travels from overlapping
-// the notch (lowest value) to clearly below it (highest value)
-private struct IslandPositionPreview: View {
-    let subtype: Int
-    let range: ClosedRange<Double>
-
-    private var fraction: Double {
-        let span = range.upperBound - range.lowerBound
-        guard span > 0 else { return 0.5 }
-        return min(1, max(0, (Double(subtype) - range.lowerBound) / span))
-    }
-
-    var body: some View {
-        GeometryReader { geo in
-            let w = geo.size.width
-            let h = geo.size.height
-            let barH: CGFloat = 13
-            let topY: CGFloat = 8            // overlapping the notch
-            let bottomY: CGFloat = h * 0.45  // clearly below the notch
-            let islandY = topY + (bottomY - topY) * fraction
-            ZStack(alignment: .top) {
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(Color(.secondarySystemBackground))
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .strokeBorder(Color(.separator), lineWidth: 1)
-                Capsule()
-                    .fill(Color.primary)
-                    .frame(width: w * 0.5, height: barH)
-                    .offset(y: topY)
-                Capsule()
-                    .fill(Color.accentColor)
-                    .frame(width: w * 0.38, height: barH)
-                    .offset(y: islandY)
-                    .animation(.easeOut(duration: 0.1), value: islandY)
-            }
         }
     }
 }

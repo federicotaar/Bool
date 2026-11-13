@@ -15,7 +15,7 @@ Bool modifies system features and appearance on supported iOS versions without a
 
 | Feature | Description |
 | --- | --- |
-| MobileGestalt tweaks | Toggle hidden device capabilities (Dynamic Island, Always-On Display, 80% charge limit, boot chime, internal build flags, and more). iOS 27 only. Dynamic Island height can also be typed in manually. |
+| MobileGestalt tweaks | Toggle hidden device capabilities (Dynamic Island, Always-On Display, 80% charge limit, boot chime, internal build flags, and more). iOS 27 only. Dynamic Island uses system layout profiles, not a free height/position control. |
 | Custom wallpapers | PosterBoard-based wallpaper collections, including MercuryPoster support. |
 | Dialer themes | Custom keypad images for the Phone app. |
 | Config tweaks | Additional system configuration toggles. |

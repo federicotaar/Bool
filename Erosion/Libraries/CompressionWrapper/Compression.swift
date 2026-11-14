@@ -180,7 +180,13 @@ public class Compression {
                 
                 len = read(fd, buff, MemoryLayout.stride(ofValue: buff))
                 while len > 0 {
-                    archive_write_data(a, buff, len)
+                    // archive_write_data returns the bytes written, or < 0 on error;
+                    // the old code ignored it, so a failed write produced a silently
+                    // truncated archive. Also close the fd before throwing.
+                    guard archive_write_data(a, buff, len) >= 0 else {
+                        close(fd)
+                        throw CompressionErrors.failedToArchive(dsecription: "Failed to write data of path \(path.path): \(String.archiveError(for: a))")
+                    }
                     len = read(fd, buff, MemoryLayout.stride(ofValue: buff))
                 }
                 

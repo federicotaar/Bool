@@ -40,7 +40,7 @@ class FSHandlers {
         print("(fs) got \(leakedPaths.count) paths via pathleak")
         paths = leakedPaths
         
-        if paths.count == 0 {
+        if paths.isEmpty {
             print("(fs) got no paths! something went wrong.")
         }
         

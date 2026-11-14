@@ -400,6 +400,10 @@ struct GestaltView: View {
         [mgOgSubtype, 2436, 2556, 2796, 2976, 2622, 2868, 2736, 2670]
     }
 
+    // verify-profile-serialization.py extracts the apply block and this read-back
+    // function by their exact source text to regression-test them on fixture plists.
+    // Rename or reformat either one and the extraction fails; update the markers
+    // in that script in the same change.
     private func mgReadSavedSubtype() throws -> Int {
         let data = try Data(contentsOf: MGURL.fsGestaltURL)
         let root = try PropertyListSerialization.propertyList(from: data, options: [], format: nil)

@@ -83,9 +83,8 @@ struct KeypadItem: Identifiable, Equatable {
     var ogImgData = Data()
 }
 
-let emptyKeypadArray = [
-    KeypadItem(kpID: KeypadID.one), KeypadItem(kpID: KeypadID.two), KeypadItem(kpID: KeypadID.three), KeypadItem(kpID: KeypadID.four), KeypadItem(kpID: KeypadID.five), KeypadItem(kpID: KeypadID.six), KeypadItem(kpID: KeypadID.seven), KeypadItem(kpID: KeypadID.eight), KeypadItem(kpID: KeypadID.nine), KeypadItem(kpID: KeypadID.star), KeypadItem(kpID: KeypadID.zero), KeypadItem(kpID: KeypadID.pound)
-]
+// one item per key, in declaration order (CaseIterable order is declaration order)
+let emptyKeypadArray = KeypadID.allCases.map { KeypadItem(kpID: $0) }
 
 enum KPMsg {
     static let resetWarn = "You'll lose both what you're currently editing and what you've already set inside of the Phone app."

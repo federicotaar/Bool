@@ -283,6 +283,10 @@ final class KeypadManager: ObservableObject {
                     return ""
                 }()
                 //print(apprName)
+                // an empty apprName would match EVERY file name via contains(""),
+                // importing a key in the wrong appearance - skip files whose
+                // appearance we could not determine instead
+                if apprName.isEmpty { continue }
                 if split.indices.contains(1) {
                     // lookup for key
                     let keyNum = split[1]

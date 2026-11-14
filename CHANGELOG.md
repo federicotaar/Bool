@@ -3,6 +3,22 @@
 All notable changes to Bool are documented here. Release versions use the
 `YYYY.MM.DD.N` scheme (date of the build plus a per-day counter).
 
+## [Unreleased]
+
+### Corrected
+- Theme import skips files whose keypad appearance cannot be determined; they
+  previously matched every key name through an empty appearance string and could
+  import the wrong light/dark variant.
+- Archive extraction rejects absolute paths, `..` components and unsafe symlinks
+  (libarchive secure flags), so a crafted theme archive cannot write outside its
+  destination folder.
+- Compression checks the result of `archive_write_data` and closes the file
+  descriptor on failure instead of silently writing a truncated archive.
+
+### Housekeeping
+- Renamed internal `dsecription`/`dontOverwite` misspellings; simplified the
+  keypad list construction and file-code parsing. No behavior change.
+
 ## [2026.11.13.2] - 2026-11-13
 
 ### Corrected

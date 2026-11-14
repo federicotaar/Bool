@@ -73,7 +73,6 @@ private enum fileWriteErr: Error {
     case truncate(errno: Int32)
     case write(errno: Int32)
     case sync(errno: Int32)
-    case rollback(errno: Int32)
     case verificationFailed
 }
 

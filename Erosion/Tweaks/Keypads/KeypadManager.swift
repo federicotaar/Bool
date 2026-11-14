@@ -114,7 +114,7 @@ final class KeypadManager: ObservableObject {
         let tpURL = URL(fileURLWithPath: mpContainerPath()).appendingPathComponent("Library/Caches/TelephonyUI-10")
         if let tpURLs = try? fm.contentsOfDirectory(at: tpURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) {
             if let split = tpURLs.first?.lastPathComponent.split(separator: "-") {
-                return split.map { String($0) }[0]
+                return String(split[0])
             }
         }
         return "other"

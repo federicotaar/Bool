@@ -10,7 +10,7 @@ import Foundation
 enum CompressionErrors: Swift.Error, LocalizedError, CustomStringConvertible {
     case failedToCopyData(description: String)
     case failedToExtract(description: String, line: Int = #line)
-    case failedToArchive(dsecription: String)
+    case failedToArchive(description: String)
     
     var description: String {
         switch self {
@@ -141,24 +141,24 @@ public class Compression {
         format.apply(to: a)
         try outputPath.withUnsafeFileSystemRepresentation { fsRepresentation in
             guard archive_write_open_filename(a, fsRepresentation) == ARCHIVE_OK else {
-                throw CompressionErrors.failedToArchive(dsecription: "Unable to open a destination to destination path \(outputPath.path)")
+                throw CompressionErrors.failedToArchive(description: "Unable to open a destination to destination path \(outputPath.path)")
             }
         }
         
         func _archiveIndividiualPath(_ path: URL) throws {
             try path.withUnsafeFileSystemRepresentation { fsRepresentation in
                 guard let fsRepresentation = fsRepresentation else {
-                    throw CompressionErrors.failedToArchive(dsecription: "Path \(path.path) is an invalid path (Cannot generate filesystem representation).")
+                    throw CompressionErrors.failedToArchive(description: "Path \(path.path) is an invalid path (Cannot generate filesystem representation).")
                 }
                 
                 processHandler?(path)
                 guard stat(fsRepresentation, &st) == 0 else {
-                    throw CompressionErrors.failedToArchive(dsecription: "Failed to stat (get information of) path \(path.path): \(String.errnoString())")
+                    throw CompressionErrors.failedToArchive(description: "Failed to stat (get information of) path \(path.path): \(String.errnoString())")
                 }
                 
                 let attrs = try FileManager.default.attributesOfItem(atPath: path.path)
                 guard let type = attrs[.type] as? FileAttributeType, let existingPosixPermissions = attrs[.posixPermissions] as? mode_t else {
-                    throw CompressionErrors.failedToArchive(dsecription: "Unable to get type or permissions of path \(path.path): \(String.errnoString()))")
+                    throw CompressionErrors.failedToArchive(description: "Unable to get type or permissions of path \(path.path): \(String.errnoString()))")
                 }
                 
                 entry = archive_entry_new()
@@ -170,12 +170,12 @@ public class Compression {
                 
                 archive_entry_set_perm(entry, existingPosixPermissions)
                 guard archive_write_header(a, entry) == ARCHIVE_OK else {
-                    throw CompressionErrors.failedToArchive(dsecription: "Failed to write header of path \(path.path): \(String.archiveError(for: a))")
+                    throw CompressionErrors.failedToArchive(description: "Failed to write header of path \(path.path): \(String.archiveError(for: a))")
                 }
                 
                 fd = open(fsRepresentation, O_RDONLY)
                 guard fd != -1 else {
-                    throw CompressionErrors.failedToArchive(dsecription: "Failed to open file \(path.path): \(String.errnoString())")
+                    throw CompressionErrors.failedToArchive(description: "Failed to open file \(path.path): \(String.errnoString())")
                 }
                 
                 len = read(fd, buff, MemoryLayout.stride(ofValue: buff))
@@ -185,7 +185,7 @@ public class Compression {
                     // truncated archive. Also close the fd before throwing.
                     guard archive_write_data(a, buff, len) >= 0 else {
                         close(fd)
-                        throw CompressionErrors.failedToArchive(dsecription: "Failed to write data of path \(path.path): \(String.archiveError(for: a))")
+                        throw CompressionErrors.failedToArchive(description: "Failed to write data of path \(path.path): \(String.archiveError(for: a))")
                     }
                     len = read(fd, buff, MemoryLayout.stride(ofValue: buff))
                 }
@@ -308,7 +308,7 @@ fileprivate func __archiveTypeConstant(forPathType pathType: FileAttributeType, 
     case .typeCharacterSpecial:
         return AE_IFCHR
     default:
-        throw CompressionErrors.failedToArchive(dsecription: "Unknown type of path \(path.path)")
+        throw CompressionErrors.failedToArchive(description: "Unknown type of path \(path.path)")
     }
 }
 

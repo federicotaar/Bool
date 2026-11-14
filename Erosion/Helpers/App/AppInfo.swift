@@ -30,8 +30,8 @@ enum AppInfo {
             let primaryIcon = icons["CFBundlePrimaryIcon"] as? [String: Any],
             let iconFiles = primaryIcon["CFBundleIconFiles"] as? [String],
             let lastIcon = iconFiles.last {
-            return UIImage(named: lastIcon) ?? UIImage()
+            return UIImage(named: lastIcon)
         }
-        return UIImage()
+        return nil
     }
 }

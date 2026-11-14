@@ -61,7 +61,7 @@ enum MGKey {
     static let intInstall = "EqrsVvjcYDdxHBiQmGhAWw" // apple-internal-install
     static let intBuild = "LBJfwOEzExRxzlAnSuI7eg" // InternalBuild
     
-    // eligbility
+    // eligibility
     static let srd = "XYlJKKkj2hztRP1NWWnhlw" // ResearchFuse
     static let appIntell = "A62OafQ85EJAiiqKn4agtg" // DeviceSupportsGenerativeModelSystems
     static let regionCode = "h63QSdBCiT/z0WU6rdQv6Q" // RegionCode

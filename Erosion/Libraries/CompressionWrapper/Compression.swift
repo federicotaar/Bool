@@ -66,7 +66,9 @@ public class Compression {
     public func extract(
         path compressedFile: URL,
         to destination: URL,
-        options: ArchiveOptions = [.restoreTime, .restorePermissions, .restoreACLs, .restoreFFLags]
+        // the secure flags matter: imported themes are user-supplied archives, and without
+        // them a crafted entry (../, absolute path, evil symlink) writes outside `destination`
+        options: ArchiveOptions = [.restoreTime, .restorePermissions, .restoreACLs, .restoreFFLags, .secureSymlinks, .secureNoDotDot, .rejectAbsolutePaths]
     ) throws {
         let flags = options.rawValue
         

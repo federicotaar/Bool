@@ -5,9 +5,24 @@ Run on macOS with Xcode command line tools. Does not open any system plist.
 from pathlib import Path
 import subprocess, tempfile
 s = Path('Erosion/Tweaks/MobileGestalt/GestaltView.swift').read_text()
-apply = s.split('            guard mgSubtype > 0 else {', 1)[1].split('            let data = try PropertyListSerialization.data', 1)[0]
-apply = 'guard mgSubtype > 0 else {' + apply
-read = s.split('    private func mgReadSavedSubtype() throws -> Int {',1)[1].split('\n    private func mgApply(',1)[0].rsplit('    }',1)[0]
+
+APPLY_START = '            guard mgSubtype > 0 else {'
+APPLY_END = '            let data = try PropertyListSerialization.data'
+READ_START = '    private func mgReadSavedSubtype() throws -> Int {'
+READ_END = '\n    private func mgApply('
+
+def extract(text, start, end):
+    # These markers are exact text from GestaltView.swift. If the app code is
+    # refactored, fail loudly here instead of testing a silently empty slice.
+    if start not in text or end not in text.split(start, 1)[-1]:
+        raise SystemExit(
+            'extraction marker missing from GestaltView.swift: '
+            f'{start.strip()!r} (or its end marker) - update the markers to match the app code'
+        )
+    return text.split(start, 1)[1].split(end, 1)[0]
+
+apply = 'guard mgSubtype > 0 else {' + extract(s, APPLY_START, APPLY_END)
+read = extract(s, READ_START, READ_END).rsplit('    }', 1)[0]
 # Same functions as the app, with the path redirected to a temporary fixture.
 swift = r'''
 import Foundation

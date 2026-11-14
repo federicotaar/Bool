@@ -42,7 +42,7 @@ public struct ArchiveOptions: OptionSet {
     public static let restoreOwner =            ArchiveOptions(rawValue: ARCHIVE_EXTRACT_OWNER)
     public static let restorePermissions =      ArchiveOptions(rawValue: ARCHIVE_EXTRACT_PERM)
     public static let restoreTime =             ArchiveOptions(rawValue: ARCHIVE_EXTRACT_TIME)
-    public static let dontOverwite =            ArchiveOptions(rawValue: ARCHIVE_EXTRACT_NO_OVERWRITE)
+    public static let dontOverwrite =            ArchiveOptions(rawValue: ARCHIVE_EXTRACT_NO_OVERWRITE)
     public static let unlink =                  ArchiveOptions(rawValue: ARCHIVE_EXTRACT_UNLINK)
 
     public static let restoreACLs =             ArchiveOptions(rawValue: ARCHIVE_EXTRACT_ACL)

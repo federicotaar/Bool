@@ -1,3 +1,7 @@
+# Manual post-release check for the app icon: takes a release tag as its only
+# # input and verifies the built icon asset attached to that release. Dispatch
+# # only.
+
 name: Verify built icon
 
 on:

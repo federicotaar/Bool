@@ -68,7 +68,7 @@ struct AcknowledgementsView: View {
                         VStack {
                             ScrollView {
                                 VStack {
-                                    Text(try! String(contentsOf: Bundle.main.url(forResource: "worse_query_LICENSE", withExtension: "txt")!, encoding: .utf8))
+                                    Text(Bundle.main.url(forResource: "worse_query_LICENSE", withExtension: "txt").flatMap { try? String(contentsOf: $0, encoding: .utf8) } ?? "License file missing from the bundle.")
                                         .multilineTextAlignment(.leading)
                                         .font(.system(size: 14))
                                 }
@@ -81,7 +81,7 @@ struct AcknowledgementsView: View {
                         VStack {
                             ScrollView {
                                 VStack {
-                                    Text(try! String(contentsOf: Bundle.main.url(forResource: "PrivateKits_LICENSE", withExtension: "txt")!, encoding: .utf8))
+                                    Text(Bundle.main.url(forResource: "PrivateKits_LICENSE", withExtension: "txt").flatMap { try? String(contentsOf: $0, encoding: .utf8) } ?? "License file missing from the bundle.")
                                         .multilineTextAlignment(.leading)
                                         .font(.system(size: 14))
                                 }

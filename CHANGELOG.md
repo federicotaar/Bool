@@ -6,6 +6,8 @@ All notable changes to Bool are documented here. Release versions use the
 ## [Unreleased]
 
 ### Corrected
+- Acknowledgements no longer crashes when a bundled license file is missing:
+  the Settings view shows a fallback line instead of force-unwrapping.
 - Theme import skips files whose keypad appearance cannot be determined; they
   previously matched every key name through an empty appearance string and could
   import the wrong light/dark variant.

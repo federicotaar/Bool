@@ -49,5 +49,13 @@ same thing on a `macos-26` runner:
    verifies the packaged bundle and icon, and creates a release with the
    unsigned `Bool.ipa` attached.
 
+## Harmless profile serialization check
+
+On macOS with Xcode command line tools, run
+`python3 verify-profile-serialization.py` from the repository root. It extracts
+the current apply/read logic and exercises temporary fixture plists only. It
+does not apply a tweak to a phone. Passing this check does not prove device
+compatibility or reboot persistence.
+
 The **Verify built icon** workflow downloads a released IPA and confirms the
 compiled icon matches the source artwork (see [ICON.md](ICON.md)).

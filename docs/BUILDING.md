@@ -11,6 +11,10 @@
 
 ## Build
 
+The build script deletes the repository-local `build/` directory and existing
+root-level `*.ipa` files before it starts. Move any IPA you want to keep out
+of this checkout first. Run it only from a disposable or backed-up checkout.
+
 ```sh
 ./ipabuild.sh
 ```

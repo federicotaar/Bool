@@ -25,5 +25,7 @@ https://github.com/federicotaar/Bool/releases/latest/download/Bool.ipa
 
 - Update the Releases badge version in `README.md`.
 - Add a section to `CHANGELOG.md`.
-- Optionally run **Verify built icon** to confirm the compiled icon in the
-  new IPA.
+- Run **Verify built icon** when icon packaging changed, and inspect its result.
+- Record which checks actually ran and which device/iOS combinations were
+  tested. A successful build or icon check does not verify tweak safety,
+  persistence, or behavior on a physical device.

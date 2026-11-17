@@ -27,9 +27,11 @@ Bool, while targets, bundle structure, and tweak code keep their upstream
 names so the tweak logic stays identical to the project it is based on.
 
 **Something went wrong after a tweak. What now?**
-Reboot the device; most cache-based changes do not survive it. If a change
-does persist and causes trouble, re-open Bool and revert it. This is exactly
-why every tweak shows its own warning - read them.
+A reboot is not a guaranteed recovery method. Stop applying more tweaks and
+record the exact change and device/iOS version. If the app is still usable,
+check whether that specific tweak offers a revert option before using it.
+Do not assume every system-file change can be undone. Keep a current backup
+before experimenting; the in-app warning is not a recovery guarantee.
 
 **Where do I report bugs?**
 Open an issue: <https://github.com/federicotaar/Bool/issues>

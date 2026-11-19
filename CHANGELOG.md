@@ -18,6 +18,9 @@ All notable changes to Bool are documented here. Release versions use the
   descriptor on failure instead of silently writing a truncated archive.
 
 ### Housekeeping
+- verify-profile-serialization.py now fails loudly with setup
+  instructions when `swift` is not on PATH, instead of dying on the
+  subprocess call.
 - Renamed internal `dsecription`/`dontOverwite` misspellings; simplified the
   keypad list construction and file-code parsing. No behavior change.
 

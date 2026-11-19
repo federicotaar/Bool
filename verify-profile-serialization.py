@@ -3,7 +3,13 @@
 Run on macOS with Xcode command line tools. Does not open any system plist.
 """
 from pathlib import Path
-import subprocess, tempfile
+import shutil, subprocess, tempfile
+
+if shutil.which('swift') is None:
+    raise SystemExit(
+        'swift not found on PATH: install the Xcode command line tools '
+        '(xcode-select --install) before running this check'
+    )
 s = Path('Erosion/Tweaks/MobileGestalt/GestaltView.swift').read_text()
 
 APPLY_START = '            guard mgSubtype > 0 else {'
